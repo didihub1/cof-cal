@@ -1,4 +1,5 @@
-const CACHE_NAME = 'coffecal-v1';
+// Cambia esto cada vez que actualices el HTML (v2, v3, v4...)
+const CACHE_NAME = 'coffecal-v2';
 const urlsToCache = [
   './',
   './index.html',
