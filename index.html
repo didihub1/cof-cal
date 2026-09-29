@@ -14,7 +14,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230a0a0a%22/><text y=%22.85em%22 x=%22.1em%22 font-size=%2280%22>☕</text></svg>">
 
-    <!-- Fuente técnica estilo base de datos -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <style>
@@ -27,6 +26,11 @@
             --border-color: #222;
         }
 
+        html, body {
+            min-height: 100vh;
+            margin: 0;
+        }
+
         body { 
             font-family: 'Share Tech Mono', monospace;
             background-color: var(--bg-color);
@@ -34,11 +38,11 @@
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 20px 20px;
+            background-attachment: fixed; /* Evita que la cuadrícula se corte en monitores grandes */
             color: var(--text-main); 
             display: flex; 
             justify-content: center; 
             padding: 20px; 
-            margin: 0;
             overscroll-behavior-y: none; 
         }
 
@@ -59,13 +63,16 @@
             font-size: 2.2em; 
             margin-bottom: 5px; 
             text-align: left;
+            text-shadow: 0 0 10px rgba(230, 126, 34, 0.6), 0 0 20px rgba(230, 126, 34, 0.3);
         }
 
         .subtitle {
-            color: var(--cyan);
+            color: #888;
             font-size: 0.75em;
             letter-spacing: 1.5px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333; /* Línea divisoria tenue */
             text-transform: uppercase;
         }
 
@@ -162,7 +169,6 @@
         .info-row { margin: 15px 0 10px 0; font-size: 14px; color: #ccc;}
         .info-row strong { color: var(--cyan); font-weight: normal;}
         
-        /* Escala visual de molienda */
         .grind-scale {
             display: flex;
             align-items: center;
@@ -204,7 +210,6 @@
         }
         .steps strong { color: var(--orange); display: inline-block; min-width: 100px; font-weight: normal;}
 
-        /* Cronómetro */
         .timer-container {
             text-align: center;
             margin-top: 30px;
@@ -226,7 +231,6 @@
         .btn-gray { color: #888; border-color: #555; }
         .btn-gray:hover, .btn-gray:active { background-color: #555; color: #fff; }
 
-        /* Bitácora */
         .recipe-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
         .recipe-card { 
             background: var(--panel-bg); 
@@ -254,10 +258,10 @@
 <body>
     <div class="calculator">
         <h1>Coffe Cal</h1>
-        <div class="subtitle">Calculadora de extracción</div>
+        <div class="subtitle">Brew Intelligence / Recipe Cross-Reference</div>
         
         <div class="form-group">
-            <label for="method">Método de Preparación:</label>
+            <label for="method">// Seleccionar método</label>
             <select id="method" onchange="updateDefaultRatio()">
                 <option value="aeropress">AeroPress</option>
                 <option value="v60">Hario V60</option>
@@ -266,12 +270,12 @@
         </div>
         
         <div class="form-group">
-            <label for="water">Volumen de Agua (ml):</label>
+            <label for="water">// Volumen de Agua (ml)</label>
             <input type="number" id="water" value="250" min="50" step="10">
         </div>
 
         <div class="form-group">
-            <label for="ratio-input">Ratio Objetivo (1:X):</label>
+            <label for="ratio-input">// Ratio Objetivo (1:X)</label>
             <input type="number" id="ratio-input" value="15" min="5" max="30" step="0.5">
             <span id="recommended-ratio-text" class="help-text">Recomendado para AeroPress: 1:15</span>
         </div>
@@ -279,14 +283,14 @@
         <button onclick="calculateBrew()">Generar Receta</button>
 
         <div id="results" class="result-card">
-            <h3>Tu Receta Exacta</h3>
+            <h3>Datos de Extracción</h3>
             <div class="metric-grid">
                 <div class="metric-box">
-                    <span>Café Molido</span>
+                    <span>Café (g)</span>
                     <strong id="coffee-amount"></strong>
                 </div>
                 <div class="metric-box">
-                    <span>Agua Total</span>
+                    <span>Agua (ml)</span>
                     <strong id="water-amount"></strong>
                 </div>
             </div>
@@ -303,7 +307,7 @@
                 <span>Gruesa</span>
             </div>
             
-            <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--cyan); text-transform: uppercase; font-size: 0.9em;">Paso a Paso:</h4>
+            <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--cyan); text-transform: uppercase; font-size: 0.9em;">// Secuencia de Vertido</h4>
             <ul id="timeline" class="steps"></ul>
         </div>
 
@@ -318,7 +322,7 @@
 
         <h2>Registro de Datos</h2>
         <div class="form-group">
-            <label for="custom-notes">Registra una nueva extracción:</label>
+            <label for="custom-notes">// Registra una nueva extracción:</label>
             <textarea id="custom-notes" rows="4" placeholder="Ej: Etiopía Lavado - Ratio 1:16.5 - V60 a 92°C..."></textarea>
             <button class="btn-cyan" style="margin-top: 10px;" onclick="addNote()">Añadir a mi lista</button>
         </div>
@@ -327,7 +331,6 @@
     </div>
 
     <script>
-        // Registrar Service Worker para PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -355,7 +358,7 @@
             const ratio = parseFloat(document.getElementById('ratio-input').value);
             
             if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) {
-                alert("Por favor ingresa valores válidos."); return;
+                alert("DATOS INVÁLIDOS."); return;
             }
 
             let grindText, steps, grindPosition;
@@ -363,7 +366,7 @@
 
             if (method === 'aeropress') {
                 grindText = "Media-Fina (Textura similar a la sal de mesa)";
-                grindPosition = "30%"; // Posición en la barra gráfica
+                grindPosition = "30%";
                 steps = [
                     `<strong>0:00 - 0:30</strong>Añade ${coffee}g de café. Vierte rápidamente ${water}ml de agua (90°C - 93°C).`,
                     `<strong>0:30 - 0:40</strong>Remueve suavemente 5 veces hasta el fondo.`,
@@ -393,12 +396,11 @@
                 ];
             }
 
-            document.getElementById('coffee-amount').innerText = coffee + " g";
-            document.getElementById('water-amount').innerText = water + " ml";
+            document.getElementById('coffee-amount').innerText = coffee;
+            document.getElementById('water-amount').innerText = water;
             document.getElementById('ratio-display').innerText = `1:${ratio}`;
             document.getElementById('grind').innerText = grindText;
             
-            // Mover el indicador de la barra gráfica
             document.getElementById('grind-indicator').style.left = grindPosition;
 
             const timeline = document.getElementById('timeline');
