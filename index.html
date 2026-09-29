@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Etiquetas esenciales para que funcione como App en el celular -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#5d4037">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Coffe Cal">
+    <meta name="application-name" content="Coffe Cal">
+    
+    <title>Coffe Cal</title>
+    
+    <!-- Favicon e Icono de App usando un Emoji renderizado como SVG -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23f4eee8%22/><text y=%22.85em%22 x=%22.1em%22 font-size=%2280%22>☕</text></svg>">
+
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4eee8; 
+            color: #3e2723; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; /* Reducido para móviles */
+            margin: 0;
+            /* Evita el scroll elástico molesto en móviles */
+            overscroll-behavior-y: none; 
+        }
+        .calculator { 
+            background: white; 
+            padding: 30px 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            max-width: 500px; 
+            width: 100%; 
+        }
+        h1, h2 { 
+            text-align: center; 
+            color: #4e342e; 
+            margin-top: 0;
+        }
+        h1 { font-size: 1.8em; margin-bottom: 25px; }
+        h2 { font-size: 1.4em; margin-bottom: 15px; margin-top: 40px; border-top: 1px solid #d7ccc8; padding-top: 25px;}
+        
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #5d4037; }
+        
+        select, input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #d7ccc8; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+            background-color: #fafafa;
+            color: #3e2723;
+            font-family: inherit;
+            /* Evita el zoom automático en iOS al tocar un input */
+            -webkit-appearance: none;
+        }
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #8d6e63;
+            box-shadow: 0 0 5px rgba(141, 110, 99, 0.3);
+        }
+        .help-text { display: block; margin-top: 6px; font-size: 0.85em; color: #795548; font-style: italic; }
+        
+        button { 
+            width: 100%; 
+            background-color: #5d4037; 
+            color: white; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 17px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: background 0.3s ease;
+            /* Mejor respuesta táctil en móviles */
+            touch-action: manipulation;
+        }
+        button:hover { background-color: #3e2723; }
+        
+        .result-card { 
+            background-color: #efebe9; 
+            border-left: 5px solid #795548; 
+            padding: 20px; 
+            margin-top: 30px; 
+            border-radius: 6px; 
+            display: none; 
+        }
+        .result-card h3 { margin-top: 0; color: #4e342e; border-bottom: 1px solid #d7ccc8; padding-bottom: 10px; }
+        
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .metric-box { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .metric-box span { display: block; font-size: 0.9em; color: #795548; margin-bottom: 5px; }
+        .metric-box strong { font-size: 1.4em; color: #d84315; }
+        
+        .info-row { margin: 10px 0; font-size: 15px; }
+        .steps { margin-top: 20px; padding-left: 0; list-style: none; }
+        .steps li { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #bcaaa4; line-height: 1.5; }
+        .steps strong { color: #d84315; display: inline-block; min-width: 100px; }
+
+        /* Cronómetro */
+        .timer-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #3e2723;
+            border-radius: 10px;
+            color: white;
+        }
+        .timer-display { font-size: 3em; font-weight: bold; font-family: monospace; margin-bottom: 15px; letter-spacing: 2px; }
+        .timer-buttons { display: flex; gap: 10px; }
+        .timer-buttons button { padding: 10px; font-size: 14px; }
+        .btn-start { background-color: #4CAF50; }
+        .btn-start:hover { background-color: #388E3C; }
+        .btn-pause { background-color: #ff9800; }
+        .btn-pause:hover { background-color: #f57c00; }
+        .btn-reset { background-color: #f44336; }
+        .btn-reset:hover { background-color: #d32f2f; }
+
+        /* Bitácora de Recetas */
+        .save-btn { margin-top: 10px; background-color: #795548; }
+        .save-btn:hover { background-color: #5d4037; }
+        .recipe-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .recipe-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border-left: 4px solid #bcaaa4; 
+            position: relative; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .recipe-date { font-size: 0.8em; color: #8d6e63; margin-bottom: 8px; font-weight: bold; }
+        .recipe-text { white-space: pre-wrap; font-size: 0.95em; color: #4e342e; margin-right: 25px; line-height: 1.4; }
+        .delete-btn { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: none; 
+            color: #d32f2f; 
+            border: none; 
+            font-size: 22px; 
+            cursor: pointer; 
+            padding: 0;
+            width: auto;
+        }
+        .delete-btn:hover { color: #b71c1c; background: none; }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Coffe Cal</h1>
+        
+        <div class="form-group">
+            <label for="method">Método de Preparación:</label>
+            <select id="method" onchange="updateDefaultRatio()">
+                <option value="aeropress">AeroPress</option>
+                <option value="v60">Hario V60</option>
+                <option value="prensa">Prensa Francesa</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="water">Volumen de Agua (ml):</label>
+            <input type="number" id="water" value="250" min="50" step="10">
+        </div>
+
+        <div class="form-group">
+            <label for="ratio-input">Ratio (1:X):</label>
+            <input type="number" id="ratio-input" value="15" min="5" max="30" step="0.5">
+            <span id="recommended-ratio-text" class="help-text">Recomendado para AeroPress: 1:15</span>
+        </div>
+        
+        <button onclick="calculateBrew()">Generar Receta</button>
+
+        <!-- Resultados -->
+        <div id="results" class="result-card">
+            <h3>Tu Receta Exacta</h3>
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <span>Café Molido</span>
+                    <strong id="coffee-amount"></strong>
+                </div>
+                <div class="metric-box">
+                    <span>Agua Total</span>
+                    <strong id="water-amount"></strong>
+                </div>
+            </div>
+            <div class="info-row"><strong>Ratio utilizado:</strong> <span id="ratio-display"></span></div>
+            <div class="info-row"><strong>Molienda:</strong> <span id="grind"></span></div>
+            
+            <h4 style="margin-top: 25px; margin-bottom: 15px; color: #4e342e;">Paso a Paso:</h4>
+            <ul id="timeline" class="steps"></ul>
+        </div>
+
+        <!-- Cronómetro -->
+        <div class="timer-container">
+            <div class="timer-display" id="timer">00:00</div>
+            <div class="timer-buttons">
+                <button class="btn-start" onclick="startTimer()">Iniciar</button>
+                <button class="btn-pause" onclick="pauseTimer()">Pausar</button>
+                <button class="btn-reset" onclick="resetTimer()">Reiniciar</button>
+            </div>
+        </div>
+
+        <!-- Bitácora de Recetas -->
+        <h2>Bitácora de Recetas</h2>
+        <div class="form-group">
+            <label for="custom-notes">Registra una nueva extracción:</label>
+            <textarea id="custom-notes" rows="4" placeholder="Ej: Etiopía Lavado - 16.6g café / 250ml agua - Tiempo total 2:45. Muy dulce."></textarea>
+            <button class="save-btn" onclick="addNote()">Añadir a mi lista</button>
+        </div>
+        
+        <div id="recipe-list-container" class="recipe-list"></div>
+    </div>
+
+    <script>
+        // --- LÓGICA DE LA CALCULADORA ---
+        const recommendedRatios = {
+            'aeropress': { ratio: 15, text: 'Recomendado para AeroPress: 1:15' },
+            'v60': { ratio: 16, text: 'Recomendado para Hario V60: 1:16' },
+            'prensa': { ratio: 15, text: 'Recomendado para Prensa Francesa: 1:15' }
+        };
+
+        function updateDefaultRatio() {
+            const method = document.getElementById('method').value;
+            const rec = recommendedRatios[method];
+            document.getElementById('ratio-input').value = rec.ratio;
+            document.getElementById('recommended-ratio-text').innerText = rec.text;
+        }
+
+        function calculateBrew() {
+            const method = document.getElementById('method').value;
+            const water = parseFloat(document.getElementById('water').value);
+            const ratio = parseFloat(document.getElementById('ratio-input').value);
+            
+            if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) {
+                alert("Por favor ingresa valores válidos."); return;
+            }
+
+            let grind, steps;
+            const coffee = (water / ratio).toFixed(1);
+
+            if (method === 'aeropress') {
+                grind = "Media-Fina (Textura similar a la sal de mesa)";
+                steps = [
+                    `<strong>0:00 - 0:30</strong>Añade ${coffee}g de café. Vierte rápidamente ${water}ml de agua (90°C - 93°C).`,
+                    `<strong>0:30 - 0:40</strong>Remueve suavemente 5 veces hasta el fondo.`,
+                    `<strong>0:40 - 2:00</strong>Inserta el émbolo y tira ligeramente para crear vacío. Deja reposar.`,
+                    `<strong>2:00 - 2:30</strong>Presiona el émbolo de manera constante hasta escuchar el siseo.`
+                ];
+            } else if (method === 'v60') {
+                grind = "Media (Textura similar a la arena gruesa)";
+                const bloomWater = Math.min(coffee * 2.5, water * 0.25).toFixed(0); 
+                const pour2 = (water * 0.6).toFixed(0);
+                steps = [
+                    `<strong>0:00 - 0:45</strong>Vierte ${bloomWater}ml de agua (bloom). Gira suavemente el cono.`,
+                    `<strong>0:45 - 1:15</strong>Vierte en espiral desde el centro hacia afuera hasta alcanzar ${pour2}ml.`,
+                    `<strong>1:15 - 1:45</strong>Continúa el vertido circular hasta completar ${water}ml.`,
+                    `<strong>1:45 - 3:30</strong>Realiza un suave giro final (swirl). Deja drenar por completo.`
+                ];
+            } else if (method === 'prensa') {
+                grind = "Gruesa (Textura de sal marina o panko)";
+                steps = [
+                    `<strong>0:00 - 0:30</strong>Vierte ${water}ml de agua sobre los ${coffee}g de café.`,
+                    `<strong>0:30 - 4:00</strong>Pon la tapa sin bajar el émbolo. Deja infusionar.`,
+                    `<strong>4:00 - 4:15</strong>Rompe la costra superior con una cuchara y limpia la espuma.`,
+                    `<strong>4:15 - 9:00</strong>Espera para que los sedimentos caigan al fondo.`,
+                    `<strong>9:00</strong>Baja el filtro suavemente solo hasta la superficie y sirve.`
+                ];
+            }
+
+            document.getElementById('coffee-amount').innerText = coffee + " g";
+            document.getElementById('water-amount').innerText = water + " ml";
+            document.getElementById('ratio-display').innerText = `1:${ratio}`;
+            document.getElementById('grind').innerText = grind;
+
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = "";
+            steps.forEach(step => {
+                const li = document.createElement('li');
+                li.innerHTML = step;
+                timeline.appendChild(li);
+            });
+            document.getElementById('results').style.display = 'block';
+        }
+
+        // --- LÓGICA DEL CRONÓMETRO ---
+        let timerInterval;
+        let seconds = 0;
+
+        function updateDisplay() {
+            let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            let secs = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${mins}:${secs}`;
+        }
+
+        function startTimer() {
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            seconds = 0;
+            updateDisplay();
+        }
+
+        // --- LÓGICA DE LA BITÁCORA ---
+        let savedRecipes = [];
+
+        function loadNotes() {
+            const storedList = localStorage.getItem('coffee_recipes_list');
+            if (storedList) {
+                savedRecipes = JSON.parse(storedList);
+            } else {
+                const oldNote = localStorage.getItem('coffee_custom_recipes');
+                if (oldNote) {
+                    savedRecipes.push({ text: oldNote, date: 'Receta antigua' });
+                    localStorage.removeItem('coffee_custom_recipes');
+                    saveToStorage();
+                }
+            }
+            renderNotes();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('coffee_recipes_list', JSON.stringify(savedRecipes));
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('recipe-list-container');
+            container.innerHTML = '';
+            
+            savedRecipes.forEach((noteObj, index) => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'recipe-date';
+                dateDiv.innerText = noteObj.date;
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'recipe-text';
+                textDiv.innerText = noteObj.text;
+                
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-btn';
+                delBtn.innerHTML = '×';
+                delBtn.title = 'Eliminar receta';
+                delBtn.onclick = () => deleteNote(index);
+                
+                card.appendChild(dateDiv);
+                card.appendChild(textDiv);
+                card.appendChild(delBtn);
+                container.appendChild(card);
+            });
+        }
+
+        function addNote() {
+            const textArea = document.getElementById('custom-notes');
+            const text = textArea.value.trim();
+            if(!text) return;
+            
+            const currentDate = new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
+            
+            savedRecipes.unshift({ text: text, date: currentDate });
+            saveToStorage();
+            
+            textArea.value = '';
+            renderNotes();
+        }
+
+        function deleteNote(index) {
+            if(confirm("¿Seguro que quieres eliminar esta receta?")) {
+                savedRecipes.splice(index, 1);
+                saveToStorage();
+                renderNotes();
+            }
+        }
+
+        window.onload = function() {
+            updateDefaultRatio();
+            loadNotes();
+        }
+    </script>
+</body>
+</html>
