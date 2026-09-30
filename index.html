@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#0a0a0a" id="meta-theme-color">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Coffe Cal">
@@ -17,26 +17,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <style>
+        /* VARIABLES DE TEMA (Modo Oscuro por defecto) */
         :root {
             --bg-color: #050505;
             --panel-bg: #0f0f0f;
             --orange: #FFB370;
             --cyan: #00E5FF;
             --text-main: #a0a0a0;
+            --text-light: #ccc;
             --border-color: #222;
+            --bg-pattern: rgba(255,255,255,0.03);
+            --input-text: white;
+            --metric-bg: #0a0a0a;
+            --h1-glow: 0 0 10px rgba(255, 179, 112, 0.4), 0 0 20px rgba(255, 179, 112, 0.2);
+            --tab-text: #666;
+            --tab-hover: #aaa;
+            --divider: #333;
+        }
+
+        /* VARIABLES DE TEMA (Modo Claro/Café) */
+        [data-theme="light"] {
+            --bg-color: #F5EBE1;
+            --panel-bg: #EAE0D5;
+            --orange: #8D6E63;
+            --cyan: #5D4037;
+            --text-main: #4E342E;
+            --text-light: #3E2723;
+            --border-color: #D7CCC8;
+            --bg-pattern: rgba(93, 64, 55, 0.05);
+            --input-text: #3E2723;
+            --metric-bg: #F5EBE1;
+            --h1-glow: none;
+            --tab-text: #8D6E63;
+            --tab-hover: #5D4037;
+            --divider: #D7CCC8;
         }
 
         html, body {
             min-height: 100vh;
             margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body { 
             font-family: 'Share Tech Mono', monospace;
             background-color: var(--bg-color);
             background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                linear-gradient(var(--bg-pattern) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-pattern) 1px, transparent 1px);
             background-size: 20px 20px;
             background-attachment: fixed; 
             color: var(--text-main); 
@@ -52,6 +80,23 @@
             width: 100%; 
         }
 
+        /* Header con botón de tema */
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        #theme-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            padding: 5px;
+            width: auto;
+            color: var(--orange);
+        }
+
         h1, h2 { 
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -63,14 +108,16 @@
             font-size: 2.2em; 
             margin-bottom: 5px; 
             text-align: left;
-            text-shadow: 0 0 10px rgba(255, 179, 112, 0.4), 0 0 20px rgba(255, 179, 112, 0.2);
+            text-shadow: var(--h1-glow);
         }
 
         .subtitle {
-            color: #888;
+            color: var(--tab-text);
             font-size: 0.75em;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--divider);
             text-transform: uppercase;
         }
 
@@ -82,12 +129,12 @@
         }
         .tab {
             padding: 10px 12px;
-            color: #666;
+            color: var(--tab-text);
             text-transform: uppercase;
             font-size: 0.8em;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: color 0.2s ease, border-color 0.2s ease;
             border-bottom: 2px solid transparent;
             margin-bottom: -1px; 
             flex-grow: 1;
@@ -97,7 +144,7 @@
             color: var(--orange);
             border-bottom: 2px solid var(--orange);
         }
-        .tab:hover:not(.active) { color: #aaa; }
+        .tab:hover:not(.active) { color: var(--tab-hover); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -129,9 +176,10 @@
             font-size: 16px; 
             box-sizing: border-box; 
             background-color: var(--panel-bg);
-            color: white;
+            color: var(--input-text);
             font-family: 'Share Tech Mono', monospace;
             -webkit-appearance: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         select:focus, input:focus, textarea:focus {
             outline: none;
@@ -142,7 +190,7 @@
             display: block; 
             margin-top: 6px; 
             font-size: 0.8em; 
-            color: #888; 
+            color: var(--tab-text); 
             font-style: italic;
         }
         
@@ -163,7 +211,7 @@
         }
         button:hover, button:active { 
             background-color: var(--orange); 
-            color: #000;
+            color: var(--panel-bg);
         }
         
         .result-card { 
@@ -183,17 +231,18 @@
         
         .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .metric-box { 
-            background: #0a0a0a; 
+            background: var(--metric-bg); 
             padding: 15px; 
             border: 1px solid var(--border-color);
             text-align: center; 
+            transition: background-color 0.3s ease;
         }
         .metric-full { grid-column: span 2; padding: 10px; }
         .metric-box span { display: block; font-size: 0.8em; color: var(--text-main); margin-bottom: 5px; text-transform: uppercase;}
         .metric-box strong { font-size: 1.5em; color: var(--cyan); }
-        .metric-full strong { font-size: 1.3em; color: #E67E22; }
+        .metric-full strong { font-size: 1.3em; color: var(--orange); }
         
-        .info-row { margin: 15px 0 10px 0; font-size: 14px; color: #ccc;}
+        .info-row { margin: 15px 0 10px 0; font-size: 14px; color: var(--text-light);}
         .info-row strong { color: var(--cyan); font-weight: normal;}
         
         .grind-scale {
@@ -203,7 +252,7 @@
             margin-top: 15px;
             margin-bottom: 25px;
             font-size: 0.8em;
-            color: #888;
+            color: var(--tab-text);
         }
         .grind-track {
             flex-grow: 1;
@@ -227,13 +276,14 @@
         
         .steps { margin-top: 20px; padding-left: 0; list-style: none; }
         .steps li { 
-            background: #0a0a0a;
+            background: var(--metric-bg);
             padding: 15px; 
             margin-bottom: 10px; 
             border-left: 2px solid var(--orange);
-            color: #ccc;
+            color: var(--text-light);
             font-size: 0.9em;
             line-height: 1.4;
+            transition: background-color 0.3s ease;
         }
         .steps strong { color: var(--orange); display: inline-block; min-width: 100px; font-weight: normal;}
 
@@ -243,19 +293,20 @@
             padding: 20px;
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
         .timer-display { font-size: 4em; color: var(--orange); margin-bottom: 15px; letter-spacing: 2px; }
         .timer-buttons { display: flex; gap: 10px; }
         .timer-buttons button { padding: 10px; font-size: 14px; }
         
         .btn-cyan { color: var(--cyan); border-color: var(--cyan); }
-        .btn-cyan:hover, .btn-cyan:active { background-color: var(--cyan); color: #000; }
-        .btn-gray { color: #888; border-color: #555; }
-        .btn-gray:hover, .btn-gray:active { background-color: #555; color: #fff; }
+        .btn-cyan:hover, .btn-cyan:active { background-color: var(--cyan); color: var(--panel-bg); }
+        .btn-gray { color: var(--tab-text); border-color: var(--tab-text); }
+        .btn-gray:hover, .btn-gray:active { background-color: var(--tab-text); color: var(--panel-bg); }
 
         .io-buttons { display: flex; gap: 10px; margin-top: 10px; }
-        .io-buttons button { font-size: 0.8em; padding: 8px; border-color: #444; color: #888;}
-        .io-buttons button:hover { background-color: #444; color: #fff; }
+        .io-buttons button { font-size: 0.8em; padding: 8px; border-color: var(--border-color); color: var(--tab-text);}
+        .io-buttons button:hover { background-color: var(--border-color); color: var(--text-main); }
 
         .recipe-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
         .recipe-card { 
@@ -264,15 +315,16 @@
             border: 1px solid var(--border-color);
             border-left: 2px solid var(--cyan);
             position: relative; 
+            transition: background-color 0.3s ease;
         }
         .recipe-date { font-size: 0.75em; color: var(--cyan); margin-bottom: 8px; text-transform: uppercase;}
-        .recipe-text { white-space: pre-wrap; font-size: 0.9em; color: #ccc; margin-right: 25px; line-height: 1.4; }
+        .recipe-text { white-space: pre-wrap; font-size: 0.9em; color: var(--text-light); margin-right: 25px; line-height: 1.4; }
         .delete-btn { 
             position: absolute; 
             top: 10px; 
             right: 10px; 
             background: none; 
-            color: #666; 
+            color: var(--tab-text); 
             border: none; 
             font-size: 20px; 
             width: auto;
@@ -283,8 +335,13 @@
 </head>
 <body>
     <div class="calculator">
-        <h1>Coffe Cal</h1>
-        <div class="subtitle">Brew Intelligence / Recipe Cross-Reference</div>
+        <div class="header-top">
+            <div>
+                <h1>Coffe Cal</h1>
+                <div class="subtitle">Brew Intelligence / Recipe Cross-Reference</div>
+            </div>
+            <button id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">☀️</button>
+        </div>
         
         <!-- Pestañas de Navegación -->
         <div class="tabs-container">
@@ -378,7 +435,6 @@
             <div class="info-row"><strong>RATIO:</strong> <span id="ratio-display"></span></div>
             <div class="info-row"><strong>MOLIENDA:</strong> <span id="grind"></span></div>
             
-            <!-- Barra visual de molienda (se oculta en personalizadas) -->
             <div class="grind-scale" id="grind-scale-container">
                 <span>Fina</span>
                 <div class="grind-track">
@@ -391,7 +447,7 @@
             <ul id="timeline" class="steps"></ul>
         </div>
 
-        <!-- Cronómetro -->
+        <!-- Cronómetro (Actualizado para no detenerse con pantalla apagada) -->
         <div class="timer-container">
             <div class="timer-display" id="timer">00:00</div>
             <div class="timer-buttons">
@@ -420,16 +476,29 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
+        }
+
+        // --- SISTEMA DE TEMA (CLARO/OSCURO) ---
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('theme-btn').innerText = theme === 'dark' ? '☀️' : '🌙';
+            
+            const metaTheme = document.getElementById('meta-theme-color');
+            if(metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#F5EBE1');
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('coffee_theme_pref', newTheme);
+            applyTheme(newTheme);
         }
 
         // --- SISTEMA DE PESTAÑAS ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
             event.target.classList.add('active');
             document.getElementById('tab-' + tabId).classList.add('active');
             document.getElementById('results').style.display = 'none';
@@ -451,7 +520,6 @@
             document.getElementById('recommended-water-text').innerText = rec.water;
         }
 
-        // --- CÁLCULO BIBLIOTECA ---
         function calculateBrew() {
             const method = document.getElementById('method').value;
             const water = parseFloat(document.getElementById('water').value);
@@ -511,19 +579,6 @@
             );
         }
 
-        // --- CÁLCULO PERSONALIZADO ---
-        let editingRecipeIndex = -1;
-
-        function clearCustomForm() {
-            document.getElementById('custom-name').value = '';
-            document.getElementById('custom-water').value = '300';
-            document.getElementById('custom-ratio').value = '15';
-            document.getElementById('custom-grind').value = '';
-            document.getElementById('custom-steps').value = '';
-            editingRecipeIndex = -1;
-            document.getElementById('btn-save-custom').innerText = "Guardar";
-        }
-
         function calculateCustomBrew() {
             const name = document.getElementById('custom-name').value || "Método Custom";
             const water = parseFloat(document.getElementById('custom-water').value);
@@ -540,7 +595,18 @@
         }
 
         // --- GESTIÓN RECETAS PROPIAS ---
+        let editingRecipeIndex = -1;
         let ownRecipes = [];
+
+        function clearCustomForm() {
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-water').value = '300';
+            document.getElementById('custom-ratio').value = '15';
+            document.getElementById('custom-grind').value = '';
+            document.getElementById('custom-steps').value = '';
+            editingRecipeIndex = -1;
+            document.getElementById('btn-save-custom').innerText = "Guardar";
+        }
 
         function loadOwnRecipes() {
             const stored = localStorage.getItem('coffee_own_recipes');
@@ -576,7 +642,7 @@
             container.innerHTML = '';
             
             if(ownRecipes.length === 0) {
-                container.innerHTML = '<p style="color: #666; font-style: italic; text-align: center; margin-top: 20px;">No has guardado recetas personalizadas.</p>';
+                container.innerHTML = '<p style="color: var(--tab-text); font-style: italic; text-align: center; margin-top: 20px;">No has guardado recetas personalizadas.</p>';
                 return;
             }
 
@@ -613,7 +679,6 @@
             
             editingRecipeIndex = index;
             document.getElementById('btn-save-custom').innerText = "Actualizar";
-            
             switchTab('personalizada');
         }
 
@@ -625,18 +690,12 @@
             }
         }
         
-        // Exportar Recetas Propias
         function exportOwnRecipes() {
             if(ownRecipes.length === 0) { alert("No hay recetas para exportar."); return; }
             let mdContent = "# Recetas Propias - Coffe Cal\n\n";
             ownRecipes.forEach(rec => {
-                mdContent += `## ${rec.name}\n`;
-                mdContent += `Ratio: ${rec.ratio}\n`;
-                mdContent += `Agua: ${rec.water}\n`;
-                mdContent += `Molienda: ${rec.grind}\n`;
-                mdContent += `Pasos:\n${rec.rawSteps}\n\n---\n\n`;
+                mdContent += `## ${rec.name}\nRatio: ${rec.ratio}\nAgua: ${rec.water}\nMolienda: ${rec.grind}\nPasos:\n${rec.rawSteps}\n\n---\n\n`;
             });
-            
             const blob = new Blob([mdContent], {type: "text/plain;charset=utf-8"});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -645,21 +704,16 @@
             URL.revokeObjectURL(a.href);
         }
 
-        // Importar Recetas Propias
         function importOwnRecipes(event) {
             const file = event.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                const blocks = text.split('---');
+                const blocks = e.target.result.split('---');
                 let importedCount = 0;
-                
                 blocks.forEach(block => {
                     const lines = block.trim().split('\n');
-                    let name = "", ratio = 15, water = 250, grind = "", rawStepsArr = [];
-                    let isSteps = false;
-
+                    let name = "", ratio = 15, water = 250, grind = "", rawStepsArr = [], isSteps = false;
                     lines.forEach(l => {
                         const line = l.trim();
                         if (line.startsWith('## ')) name = line.substring(3).trim();
@@ -669,26 +723,21 @@
                         else if (line.startsWith('Pasos:')) isSteps = true;
                         else if (isSteps && line !== "") rawStepsArr.push(line);
                     });
-                    
                     if(name && !isNaN(ratio) && !isNaN(water)) {
-                        ownRecipes.push({ name: name, water: water, ratio: ratio, grind: grind, rawSteps: rawStepsArr.join('\n') });
+                        ownRecipes.push({ name, water, ratio, grind, rawSteps: rawStepsArr.join('\n') });
                         importedCount++;
                     }
                 });
-                
                 if(importedCount > 0) {
                     localStorage.setItem('coffee_own_recipes', JSON.stringify(ownRecipes));
                     renderOwnRecipes();
-                    alert(`Se importaron ${importedCount} recetas exitosamente.`);
-                } else {
-                    alert("No se detectó un formato válido en el archivo.");
-                }
+                    alert(`Se importaron ${importedCount} recetas.`);
+                } else alert("Formato no válido.");
             };
             reader.readAsText(file);
             event.target.value = ''; 
         }
 
-        // --- RENDERIZAR RESULTADOS (Global) ---
         function renderResults(title, coffee, water, ratio, grind, stepsArray, grindPosition) {
             document.getElementById('result-title').innerText = `Datos: ${title}`;
             document.getElementById('coffee-amount').innerText = coffee;
@@ -703,9 +752,7 @@
             if (grindPosition) {
                 scaleContainer.style.display = 'flex';
                 document.getElementById('grind-indicator').style.left = grindPosition;
-            } else {
-                scaleContainer.style.display = 'none'; 
-            }
+            } else scaleContainer.style.display = 'none'; 
 
             const timeline = document.getElementById('timeline');
             timeline.innerHTML = "";
@@ -714,25 +761,67 @@
                 li.innerHTML = step;
                 timeline.appendChild(li);
             });
-            
             document.getElementById('results').style.display = 'block';
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // --- CRONÓMETRO ---
+        // --- CRONÓMETRO AVANZADO (Delta Time + WakeLock) ---
         let timerInterval;
-        let seconds = 0;
+        let timerSeconds = 0;
+        let startTime = 0;
+        let isRunning = false;
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) { console.log(`Wake Lock error: ${err.message}`); }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+        }
+
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible' && isRunning) {
+                requestWakeLock(); // Re-solicita el bloqueo de pantalla al volver a la app
+            }
+        });
 
         function updateDisplay() {
-            let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            let secs = (seconds % 60).toString().padStart(2, '0');
+            let mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            let secs = (timerSeconds % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${mins}:${secs}`;
         }
-        function startTimer() { if (!timerInterval) { timerInterval = setInterval(() => { seconds++; updateDisplay(); }, 1000); } }
-        function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
-        function resetTimer() { pauseTimer(); seconds = 0; updateDisplay(); }
 
-        // --- BITÁCORA Y EXPORT/IMPORT ---
+        function startTimer() { 
+            if (!isRunning) { 
+                isRunning = true;
+                startTime = Date.now() - (timerSeconds * 1000); // Fija el tiempo de origen real
+                timerInterval = setInterval(() => { 
+                    // Calcula los segundos en base a la hora del sistema, no iteraciones del navegador
+                    timerSeconds = Math.floor((Date.now() - startTime) / 1000); 
+                    updateDisplay(); 
+                }, 250); 
+                requestWakeLock();
+            } 
+        }
+
+        function pauseTimer() { 
+            if(isRunning) {
+                clearInterval(timerInterval); 
+                isRunning = false;
+                releaseWakeLock();
+            }
+        }
+
+        function resetTimer() { pauseTimer(); timerSeconds = 0; updateDisplay(); }
+
+        // --- BITÁCORA ---
         let savedLogs = [];
 
         function loadNotes() {
@@ -741,9 +830,7 @@
             renderNotes();
         }
 
-        function saveToStorage() {
-            localStorage.setItem('coffee_recipes_list', JSON.stringify(savedLogs));
-        }
+        function saveToStorage() { localStorage.setItem('coffee_recipes_list', JSON.stringify(savedLogs)); }
 
         function renderNotes() {
             const container = document.getElementById('recipe-list-container');
@@ -751,11 +838,7 @@
             savedLogs.forEach((noteObj, index) => {
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
-                card.innerHTML = `
-                    <div class="recipe-date">${noteObj.date}</div>
-                    <div class="recipe-text">${noteObj.text}</div>
-                    <button class="delete-btn" onclick="deleteNote(${index})">×</button>
-                `;
+                card.innerHTML = `<div class="recipe-date">${noteObj.date}</div><div class="recipe-text">${noteObj.text}</div><button class="delete-btn" onclick="deleteNote(${index})">×</button>`;
                 container.appendChild(card);
             });
         }
@@ -765,25 +848,20 @@
             const text = textArea.value.trim();
             if(!text) return;
             const currentDate = new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
-            savedLogs.unshift({ text: text, date: currentDate });
+            savedLogs.unshift({ text, date: currentDate });
             saveToStorage();
             textArea.value = '';
             renderNotes();
         }
 
         function deleteNote(index) {
-            if(confirm("¿Eliminar registro?")) {
-                savedLogs.splice(index, 1);
-                saveToStorage();
-                renderNotes();
-            }
+            if(confirm("¿Eliminar registro?")) { savedLogs.splice(index, 1); saveToStorage(); renderNotes(); }
         }
 
         function exportNotes() {
             if(savedLogs.length === 0) { alert("No hay registros para exportar."); return; }
             let mdContent = "# Bitácora de Extracción - Coffe Cal\n\n";
             savedLogs.forEach(r => { mdContent += `### ${r.date}\n${r.text}\n\n---\n\n`; });
-            
             const blob = new Blob([mdContent], {type: "text/plain;charset=utf-8"});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -797,38 +875,30 @@
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                const blocks = text.split('---');
+                const blocks = e.target.result.split('---');
                 let importedCount = 0;
-                
                 blocks.forEach(block => {
                     const lines = block.trim().split('\n');
-                    let date = "";
-                    let content = [];
+                    let date = "", content = [];
                     lines.forEach(l => {
                         if(l.startsWith('### ')) date = l.substring(4).trim();
                         else if(l.trim() !== "" && !l.startsWith('# Bitácora')) content.push(l);
                     });
-                    
                     if(date && content.length > 0) {
-                        savedLogs.push({ date: date, text: content.join('\n') });
+                        savedLogs.push({ date, text: content.join('\n') });
                         importedCount++;
                     }
                 });
-                
-                if(importedCount > 0) {
-                    saveToStorage();
-                    renderNotes();
-                    alert(`Se importaron ${importedCount} registros exitosamente.`);
-                } else {
-                    alert("No se detectó un formato válido en el archivo.");
-                }
+                if(importedCount > 0) { saveToStorage(); renderNotes(); alert(`Se importaron ${importedCount} registros.`); } 
+                else alert("Formato no válido.");
             };
             reader.readAsText(file);
             event.target.value = ''; 
         }
 
         window.onload = function() {
+            const savedTheme = localStorage.getItem('coffee_theme_pref') || 'dark';
+            applyTheme(savedTheme);
             updateDefaultRatio();
             loadNotes();
             loadOwnRecipes();
