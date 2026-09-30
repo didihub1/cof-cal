@@ -67,7 +67,7 @@
         }
 
         .subtitle {
-            color: #888;
+            color: #888; /* Modificado al tono gris solicitado */
             font-size: 0.75em;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
@@ -300,7 +300,8 @@
                 <select id="method" onchange="updateDefaultRatio()">
                     <option value="aeropress">AeroPress</option>
                     <option value="v60">Hario V60</option>
-                    <option value="prensa">Prensa Francesa</option>
+                    <option value="prensa_basica">Prensa Francesa (Básica 4 min)</option>
+                    <option value="prensa">Prensa Francesa (Hoffmann 9 min)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -417,7 +418,7 @@
     </div>
 
     <script>
-        // Actualizado para refrescar la caché
+        // Registrar Service Worker para PWA (Actualizado para forzar caché)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js');
@@ -438,7 +439,8 @@
         const recommendedRatios = {
             'aeropress': { ratio: 15, text: 'Recomendado para AeroPress: 1:15', water: 'Rec: 200-250 ml por taza' },
             'v60': { ratio: 16, text: 'Recomendado para Hario V60: 1:16', water: 'Rec: 250-300 ml por taza' },
-            'prensa': { ratio: 15, text: 'Recomendado para Prensa Francesa: 1:15', water: 'Rec: 250-350 ml por taza' }
+            'prensa_basica': { ratio: 16, text: 'Recomendado para Prensa Básica: 1:16', water: 'Rec: 250-350 ml por taza' },
+            'prensa': { ratio: 15, text: 'Recomendado para Prensa Hoffmann: 1:15', water: 'Rec: 250-350 ml por taza' }
         };
 
         function updateDefaultRatio() {
@@ -480,6 +482,17 @@
                     `<strong>1:15 - 1:45</strong>Continúa el vertido circular hasta completar ${water}ml.`,
                     `<strong>1:45 - 3:30</strong>Realiza un suave giro final (swirl). Deja drenar por completo.`
                 ];
+            } else if (method === 'prensa_basica') {
+                grindText = "Media (Textura similar a arena, 600 - 800 µm)";
+                grindPosition = "70%";
+                const bloomWater = (water * 0.25).toFixed(0);
+                steps = [
+                    `<strong>0:00 - 0:10</strong>Añade ${coffee}g de café y vierte ${bloomWater}ml de agua (96°C) asegurando saturar todo.`,
+                    `<strong>0:10 - 0:30</strong>Deja que el café florezca (bloom) por 20 segundos.`,
+                    `<strong>0:30 - 0:40</strong>Remueve suavemente con una cuchara y vierte el resto del agua hasta alcanzar ${water}ml.`,
+                    `<strong>0:40 - 4:40</strong>Coloca el émbolo encima para mantener el calor (sin presionar) y espera 4 minutos.`,
+                    `<strong>4:40 - 4:50</strong>Presiona el émbolo suave y lentamente. Sirve inmediatamente.`
+                ];
             } else if (method === 'prensa') {
                 grindText = "Gruesa (Textura de sal marina o panko)";
                 grindPosition = "90%";
@@ -492,7 +505,10 @@
                 ];
             }
 
-            renderResults(method.toUpperCase(), coffee, water, ratio, grindText, steps, grindPosition);
+            renderResults(
+                method === 'prensa_basica' ? 'PRENSA FRANCESA (BÁSICA)' : method.toUpperCase(), 
+                coffee, water, ratio, grindText, steps, grindPosition
+            );
         }
 
         // --- CÁLCULO PERSONALIZADO ---
