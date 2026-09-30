@@ -20,7 +20,7 @@
         :root {
             --bg-color: #050505;
             --panel-bg: #0f0f0f;
-            --orange: #E67E22;
+            --orange: #FFB370; /* Ajustado al naranja pastel de la imagen */
             --cyan: #00E5FF;
             --text-main: #a0a0a0;
             --border-color: #222;
@@ -38,7 +38,7 @@
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 20px 20px;
-            background-attachment: fixed; /* Evita que la cuadrícula se corte en monitores grandes */
+            background-attachment: fixed; 
             color: var(--text-main); 
             display: flex; 
             justify-content: center; 
@@ -63,18 +63,41 @@
             font-size: 2.2em; 
             margin-bottom: 5px; 
             text-align: left;
-            text-shadow: 0 0 10px rgba(230, 126, 34, 0.6), 0 0 20px rgba(230, 126, 34, 0.3);
+            text-shadow: 0 0 10px rgba(255, 179, 112, 0.4), 0 0 20px rgba(255, 179, 112, 0.2);
         }
 
         .subtitle {
             color: #888;
             font-size: 0.75em;
             letter-spacing: 1.5px;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333; /* Línea divisoria tenue */
+            margin-bottom: 20px;
             text-transform: uppercase;
         }
+
+        /* Pestañas (Tabs) */
+        .tabs-container {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+        .tab {
+            padding: 10px 15px;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px; 
+        }
+        .tab.active {
+            color: var(--orange);
+            border-bottom: 2px solid var(--orange);
+        }
+        .tab:hover:not(.active) { color: #aaa; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         h2 { 
             color: var(--orange);
@@ -163,8 +186,10 @@
             border: 1px solid var(--border-color);
             text-align: center; 
         }
+        .metric-full { grid-column: span 2; padding: 10px; }
         .metric-box span { display: block; font-size: 0.8em; color: var(--text-main); margin-bottom: 5px; text-transform: uppercase;}
         .metric-box strong { font-size: 1.5em; color: var(--cyan); }
+        .metric-full strong { font-size: 1.3em; color: #E67E22; }
         
         .info-row { margin: 15px 0 10px 0; font-size: 14px; color: #ccc;}
         .info-row strong { color: var(--cyan); font-weight: normal;}
@@ -217,12 +242,7 @@
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
         }
-        .timer-display { 
-            font-size: 4em; 
-            color: var(--orange);
-            margin-bottom: 15px; 
-            letter-spacing: 2px; 
-        }
+        .timer-display { font-size: 4em; color: var(--orange); margin-bottom: 15px; letter-spacing: 2px; }
         .timer-buttons { display: flex; gap: 10px; }
         .timer-buttons button { padding: 10px; font-size: 14px; }
         
@@ -230,6 +250,11 @@
         .btn-cyan:hover, .btn-cyan:active { background-color: var(--cyan); color: #000; }
         .btn-gray { color: #888; border-color: #555; }
         .btn-gray:hover, .btn-gray:active { background-color: #555; color: #fff; }
+
+        /* Botones pequeños de exportar */
+        .io-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .io-buttons button { font-size: 0.8em; padding: 8px; border-color: #444; color: #888;}
+        .io-buttons button:hover { background-color: #444; color: #fff; }
 
         .recipe-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
         .recipe-card { 
@@ -260,30 +285,63 @@
         <h1>Coffe Cal</h1>
         <div class="subtitle">Brew Intelligence / Recipe Cross-Reference</div>
         
-        <div class="form-group">
-            <label for="method">// Seleccionar método</label>
-            <select id="method" onchange="updateDefaultRatio()">
-                <option value="aeropress">AeroPress</option>
-                <option value="v60">Hario V60</option>
-                <option value="prensa">Prensa Francesa</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="water">// Volumen de Agua (ml)</label>
-            <input type="number" id="water" value="250" min="50" step="10">
+        <!-- Pestañas de Navegación -->
+        <div class="tabs-container">
+            <div class="tab active" onclick="switchTab('biblioteca')">Biblioteca</div>
+            <div class="tab" onclick="switchTab('personalizada')">Personalizada</div>
         </div>
 
-        <div class="form-group">
-            <label for="ratio-input">// Ratio Objetivo (1:X)</label>
-            <input type="number" id="ratio-input" value="15" min="5" max="30" step="0.5">
-            <span id="recommended-ratio-text" class="help-text">Recomendado para AeroPress: 1:15</span>
+        <!-- Pestaña: Biblioteca (Standard) -->
+        <div id="tab-biblioteca" class="tab-content active">
+            <div class="form-group">
+                <label for="method">// Seleccionar método</label>
+                <select id="method" onchange="updateDefaultRatio()">
+                    <option value="aeropress">AeroPress</option>
+                    <option value="v60">Hario V60</option>
+                    <option value="prensa">Prensa Francesa</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="water">// Volumen de Agua (ml)</label>
+                <input type="number" id="water" value="250" min="50" step="10">
+                <span id="recommended-water-text" class="help-text">Rec: 200-250 ml por taza</span>
+            </div>
+            <div class="form-group">
+                <label for="ratio-input">// Ratio Objetivo (1:X)</label>
+                <input type="number" id="ratio-input" value="15" min="5" max="30" step="0.5">
+                <span id="recommended-ratio-text" class="help-text">Recomendado para AeroPress: 1:15</span>
+            </div>
+            <button onclick="calculateBrew()">Generar Receta</button>
         </div>
-        
-        <button onclick="calculateBrew()">Generar Receta</button>
 
+        <!-- Pestaña: Personalizada -->
+        <div id="tab-personalizada" class="tab-content">
+            <div class="form-group">
+                <label for="custom-name">// Nombre del Método</label>
+                <input type="text" id="custom-name" placeholder="Ej: Chemex, Origami...">
+            </div>
+            <div class="form-group">
+                <label for="custom-water">// Volumen de Agua (ml)</label>
+                <input type="number" id="custom-water" value="300" min="50" step="10">
+            </div>
+            <div class="form-group">
+                <label for="custom-ratio">// Ratio Objetivo (1:X)</label>
+                <input type="number" id="custom-ratio" value="16" min="5" max="30" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="custom-grind">// Molienda a utilizar</label>
+                <input type="text" id="custom-grind" placeholder="Ej: Fina, Media-Fina, Gruesa...">
+            </div>
+            <div class="form-group">
+                <label for="custom-steps">// Pasos de vertido (separa cada paso con un "Enter")</label>
+                <textarea id="custom-steps" rows="4" placeholder="0:00 - Bloom con 50ml&#10;0:45 - Verter 150ml..."></textarea>
+            </div>
+            <button onclick="calculateCustomBrew()">Generar Receta</button>
+        </div>
+
+        <!-- Resultados Globales -->
         <div id="results" class="result-card">
-            <h3>Datos de Extracción</h3>
+            <h3 id="result-title">Datos de Extracción</h3>
             <div class="metric-grid">
                 <div class="metric-box">
                     <span>Café (g)</span>
@@ -293,13 +351,17 @@
                     <span>Agua (ml)</span>
                     <strong id="water-amount"></strong>
                 </div>
+                <div class="metric-box metric-full">
+                    <span>Cafeína Est.</span>
+                    <strong id="caffeine-amount"></strong>
+                </div>
             </div>
             
             <div class="info-row"><strong>RATIO:</strong> <span id="ratio-display"></span></div>
             <div class="info-row"><strong>MOLIENDA:</strong> <span id="grind"></span></div>
             
-            <!-- Barra visual de molienda -->
-            <div class="grind-scale">
+            <!-- Barra visual de molienda (se oculta en personalizadas) -->
+            <div class="grind-scale" id="grind-scale-container">
                 <span>Fina</span>
                 <div class="grind-track">
                     <div class="grind-indicator" id="grind-indicator"></div>
@@ -311,6 +373,7 @@
             <ul id="timeline" class="steps"></ul>
         </div>
 
+        <!-- Cronómetro -->
         <div class="timer-container">
             <div class="timer-display" id="timer">00:00</div>
             <div class="timer-buttons">
@@ -320,11 +383,18 @@
             </div>
         </div>
 
+        <!-- Bitácora -->
         <h2>Registro de Datos</h2>
         <div class="form-group">
             <label for="custom-notes">// Registra una nueva extracción:</label>
             <textarea id="custom-notes" rows="4" placeholder="Ej: Etiopía Lavado - Ratio 1:16.5 - V60 a 92°C..."></textarea>
             <button class="btn-cyan" style="margin-top: 10px;" onclick="addNote()">Añadir a mi lista</button>
+            
+            <div class="io-buttons">
+                <button onclick="exportNotes()">Exportar (.txt)</button>
+                <button onclick="document.getElementById('import-file').click()">Importar (.txt)</button>
+                <input type="file" id="import-file" style="display:none" accept=".txt,.md" onchange="importNotes(event)">
+            </div>
         </div>
         
         <div id="recipe-list-container" class="recipe-list"></div>
@@ -333,16 +403,25 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado'))
-                    .catch(err => console.error('Error registrando Service Worker:', err));
+                navigator.serviceWorker.register('./sw.js');
             });
         }
 
+        // --- SISTEMA DE PESTAÑAS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('results').style.display = 'none'; // Oculta resultados al cambiar
+        }
+
+        // --- DATOS BIBLIOTECA ---
         const recommendedRatios = {
-            'aeropress': { ratio: 15, text: 'Recomendado para AeroPress: 1:15' },
-            'v60': { ratio: 16, text: 'Recomendado para Hario V60: 1:16' },
-            'prensa': { ratio: 15, text: 'Recomendado para Prensa Francesa: 1:15' }
+            'aeropress': { ratio: 15, text: 'Recomendado para AeroPress: 1:15', water: 'Rec: 200-250 ml por taza' },
+            'v60': { ratio: 16, text: 'Recomendado para Hario V60: 1:16', water: 'Rec: 250-300 ml por taza' },
+            'prensa': { ratio: 15, text: 'Recomendado para Prensa Francesa: 1:15', water: 'Rec: 250-350 ml por taza' }
         };
 
         function updateDefaultRatio() {
@@ -350,19 +429,19 @@
             const rec = recommendedRatios[method];
             document.getElementById('ratio-input').value = rec.ratio;
             document.getElementById('recommended-ratio-text').innerText = rec.text;
+            document.getElementById('recommended-water-text').innerText = rec.water;
         }
 
+        // --- CÁLCULO BIBLIOTECA ---
         function calculateBrew() {
             const method = document.getElementById('method').value;
             const water = parseFloat(document.getElementById('water').value);
             const ratio = parseFloat(document.getElementById('ratio-input').value);
             
-            if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) {
-                alert("DATOS INVÁLIDOS."); return;
-            }
+            if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) { alert("DATOS INVÁLIDOS."); return; }
 
-            let grindText, steps, grindPosition;
             const coffee = (water / ratio).toFixed(1);
+            let grindText, steps, grindPosition;
 
             if (method === 'aeropress') {
                 grindText = "Media-Fina (Textura similar a la sal de mesa)";
@@ -396,23 +475,66 @@
                 ];
             }
 
+            renderResults(method.toUpperCase(), coffee, water, ratio, grindText, steps, grindPosition);
+        }
+
+        // --- CÁLCULO PERSONALIZADO ---
+        function calculateCustomBrew() {
+            const name = document.getElementById('custom-name').value || "Método Custom";
+            const water = parseFloat(document.getElementById('custom-water').value);
+            const ratio = parseFloat(document.getElementById('custom-ratio').value);
+            const grind = document.getElementById('custom-grind').value || "No especificada";
+            const rawSteps = document.getElementById('custom-steps').value;
+
+            if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) { alert("DATOS INVÁLIDOS."); return; }
+
+            const coffee = (water / ratio).toFixed(1);
+            
+            // Transformar saltos de línea en array de pasos
+            let steps = [];
+            if(rawSteps.trim() !== "") {
+                steps = rawSteps.split('\n').filter(s => s.trim() !== "");
+            } else {
+                steps = ["Sin pasos definidos."];
+            }
+
+            renderResults(name.toUpperCase(), coffee, water, ratio, grind, steps, null);
+        }
+
+        // --- RENDERIZAR RESULTADOS (Global) ---
+        function renderResults(title, coffee, water, ratio, grind, stepsArray, grindPosition) {
+            document.getElementById('result-title').innerText = `Datos: ${title}`;
             document.getElementById('coffee-amount').innerText = coffee;
             document.getElementById('water-amount').innerText = water;
             document.getElementById('ratio-display').innerText = `1:${ratio}`;
-            document.getElementById('grind').innerText = grindText;
+            document.getElementById('grind').innerText = grind;
             
-            document.getElementById('grind-indicator').style.left = grindPosition;
+            // Calcular cafeína (Aprox 10mg por gramo de café)
+            const caffeine = (coffee * 10).toFixed(0);
+            document.getElementById('caffeine-amount').innerText = `~${caffeine} mg`;
 
+            // Manejo de la barra visual de molienda
+            const scaleContainer = document.getElementById('grind-scale-container');
+            if (grindPosition) {
+                scaleContainer.style.display = 'flex';
+                document.getElementById('grind-indicator').style.left = grindPosition;
+            } else {
+                scaleContainer.style.display = 'none'; // Se oculta en personalizadas
+            }
+
+            // Generar pasos
             const timeline = document.getElementById('timeline');
             timeline.innerHTML = "";
-            steps.forEach(step => {
+            stepsArray.forEach(step => {
                 const li = document.createElement('li');
                 li.innerHTML = step;
                 timeline.appendChild(li);
             });
+            
             document.getElementById('results').style.display = 'block';
         }
 
+        // --- CRONÓMETRO ---
         let timerInterval;
         let seconds = 0;
 
@@ -421,34 +543,16 @@
             let secs = (seconds % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${mins}:${secs}`;
         }
+        function startTimer() { if (!timerInterval) { timerInterval = setInterval(() => { seconds++; updateDisplay(); }, 1000); } }
+        function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
+        function resetTimer() { pauseTimer(); seconds = 0; updateDisplay(); }
 
-        function startTimer() {
-            if (!timerInterval) {
-                timerInterval = setInterval(() => {
-                    seconds++;
-                    updateDisplay();
-                }, 1000);
-            }
-        }
-
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            seconds = 0;
-            updateDisplay();
-        }
-
+        // --- BITÁCORA Y EXPORT/IMPORT ---
         let savedRecipes = [];
 
         function loadNotes() {
             const storedList = localStorage.getItem('coffee_recipes_list');
-            if (storedList) {
-                savedRecipes = JSON.parse(storedList);
-            }
+            if (storedList) savedRecipes = JSON.parse(storedList);
             renderNotes();
         }
 
@@ -459,27 +563,14 @@
         function renderNotes() {
             const container = document.getElementById('recipe-list-container');
             container.innerHTML = '';
-            
             savedRecipes.forEach((noteObj, index) => {
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
-                
-                const dateDiv = document.createElement('div');
-                dateDiv.className = 'recipe-date';
-                dateDiv.innerText = noteObj.date;
-
-                const textDiv = document.createElement('div');
-                textDiv.className = 'recipe-text';
-                textDiv.innerText = noteObj.text;
-                
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn';
-                delBtn.innerHTML = '×';
-                delBtn.onclick = () => deleteNote(index);
-                
-                card.appendChild(dateDiv);
-                card.appendChild(textDiv);
-                card.appendChild(delBtn);
+                card.innerHTML = `
+                    <div class="recipe-date">${noteObj.date}</div>
+                    <div class="recipe-text">${noteObj.text}</div>
+                    <button class="delete-btn" onclick="deleteNote(${index})">×</button>
+                `;
                 container.appendChild(card);
             });
         }
@@ -488,11 +579,9 @@
             const textArea = document.getElementById('custom-notes');
             const text = textArea.value.trim();
             if(!text) return;
-            
             const currentDate = new Date().toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' });
             savedRecipes.unshift({ text: text, date: currentDate });
             saveToStorage();
-            
             textArea.value = '';
             renderNotes();
         }
@@ -503,6 +592,57 @@
                 saveToStorage();
                 renderNotes();
             }
+        }
+
+        // Exportar a TXT
+        function exportNotes() {
+            if(savedRecipes.length === 0) { alert("No hay registros para exportar."); return; }
+            let mdContent = "# Bitácora de Extracción - Coffe Cal\n\n";
+            savedRecipes.forEach(r => { mdContent += `### ${r.date}\n${r.text}\n\n---\n\n`; });
+            
+            const blob = new Blob([mdContent], {type: "text/plain;charset=utf-8"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = "coffe_cal_bitacora.txt";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Importar desde TXT
+        function importNotes(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const blocks = text.split('---');
+                let importedCount = 0;
+                
+                blocks.forEach(block => {
+                    const lines = block.trim().split('\n');
+                    let date = "";
+                    let content = [];
+                    lines.forEach(l => {
+                        if(l.startsWith('### ')) date = l.substring(4).trim();
+                        else if(l.trim() !== "" && !l.startsWith('# Bitácora')) content.push(l);
+                    });
+                    
+                    if(date && content.length > 0) {
+                        savedRecipes.push({ date: date, text: content.join('\n') });
+                        importedCount++;
+                    }
+                });
+                
+                if(importedCount > 0) {
+                    saveToStorage();
+                    renderNotes();
+                    alert(`Se importaron ${importedCount} registros exitosamente.`);
+                } else {
+                    alert("No se detectó un formato válido en el archivo.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Resetear el input file
         }
 
         window.onload = function() {
