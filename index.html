@@ -67,7 +67,7 @@
         }
 
         .subtitle {
-            color: #888; /* Modificado al tono gris solicitado */
+            color: #888;
             font-size: 0.75em;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
@@ -342,7 +342,8 @@
             
             <div style="display: flex; gap: 10px;">
                 <button onclick="calculateCustomBrew()">Calcular</button>
-                <button class="btn-cyan" onclick="saveOwnRecipe()">Guardar</button>
+                <button id="btn-save-custom" class="btn-cyan" onclick="saveOwnRecipe()">Guardar</button>
+                <button class="btn-gray" onclick="clearCustomForm()" style="width: auto; padding: 0 15px;" title="Limpiar formulario">↺</button>
             </div>
         </div>
 
@@ -418,7 +419,6 @@
     </div>
 
     <script>
-        // Registrar Service Worker para PWA (Actualizado para forzar caché)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js');
@@ -512,6 +512,18 @@
         }
 
         // --- CÁLCULO PERSONALIZADO ---
+        let editingRecipeIndex = -1;
+
+        function clearCustomForm() {
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-water').value = '300';
+            document.getElementById('custom-ratio').value = '15';
+            document.getElementById('custom-grind').value = '';
+            document.getElementById('custom-steps').value = '';
+            editingRecipeIndex = -1;
+            document.getElementById('btn-save-custom').innerText = "Guardar";
+        }
+
         function calculateCustomBrew() {
             const name = document.getElementById('custom-name').value || "Método Custom";
             const water = parseFloat(document.getElementById('custom-water').value);
@@ -545,10 +557,18 @@
 
             if (isNaN(water) || water <= 0 || isNaN(ratio) || ratio <= 0) { alert("DATOS INVÁLIDOS."); return; }
 
-            ownRecipes.push({ name, water, ratio, grind, rawSteps });
+            if (editingRecipeIndex >= 0) {
+                ownRecipes[editingRecipeIndex] = { name, water, ratio, grind, rawSteps };
+                alert("Receta actualizada exitosamente.");
+            } else {
+                ownRecipes.push({ name, water, ratio, grind, rawSteps });
+                alert("Receta guardada exitosamente en la pestaña 'PROPIAS'.");
+            }
+            
             localStorage.setItem('coffee_own_recipes', JSON.stringify(ownRecipes));
+            clearCustomForm();
             renderOwnRecipes();
-            alert("Receta guardada exitosamente en la pestaña 'PROPIAS'.");
+            switchTab('propias');
         }
 
         function renderOwnRecipes() {
@@ -568,6 +588,7 @@
                     <div class="recipe-text">Ratio: 1:${rec.ratio} | Agua: ${rec.water}ml</div>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button class="btn-cyan" style="padding: 8px; font-size: 12px;" onclick="calculateOwnBrew(${index})">Calcular</button>
+                        <button class="btn-gray" style="padding: 8px; font-size: 12px;" onclick="editOwnRecipe(${index})">Editar</button>
                         <button class="btn-gray" style="padding: 8px; font-size: 12px;" onclick="deleteOwnRecipe(${index})">Eliminar</button>
                     </div>
                 `;
@@ -580,6 +601,20 @@
             const coffee = (rec.water / rec.ratio).toFixed(1);
             let steps = rec.rawSteps.trim() !== "" ? rec.rawSteps.split('\n').filter(s => s.trim() !== "") : ["Sin pasos definidos."];
             renderResults(rec.name.toUpperCase(), coffee, rec.water, rec.ratio, rec.grind, steps, null);
+        }
+
+        function editOwnRecipe(index) {
+            const rec = ownRecipes[index];
+            document.getElementById('custom-name').value = rec.name;
+            document.getElementById('custom-water').value = rec.water;
+            document.getElementById('custom-ratio').value = rec.ratio;
+            document.getElementById('custom-grind').value = rec.grind;
+            document.getElementById('custom-steps').value = rec.rawSteps;
+            
+            editingRecipeIndex = index;
+            document.getElementById('btn-save-custom').innerText = "Actualizar";
+            
+            switchTab('personalizada');
         }
 
         function deleteOwnRecipe(index) {
