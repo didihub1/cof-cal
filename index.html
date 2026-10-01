@@ -90,11 +90,30 @@
         #theme-btn {
             background: none;
             border: none;
-            font-size: 1.8em;
             cursor: pointer;
-            padding: 5px;
+            padding: 10px 5px;
             width: auto;
             color: var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Icono de Media Luna / Mitad de círculo */
+        .theme-icon {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            background: linear-gradient(90deg, currentColor 50%, transparent 0);
+            position: relative;
+            z-index: 1;
+            transition: background 0.4s ease, color 0.3s ease, transform 0.4s ease;
+        }
+        
+        [data-theme="light"] .theme-icon {
+            background: linear-gradient(270deg, currentColor 50%, transparent 0);
         }
 
         h1, h2 { 
@@ -340,7 +359,10 @@
                 <h1>Coffe Cal</h1>
                 <div class="subtitle">Brew Intelligence / Recipe Cross-Reference</div>
             </div>
-            <button id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">☀️</button>
+            <!-- Nuevo icono de Tema -->
+            <button id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">
+                <span class="theme-icon"></span>
+            </button>
         </div>
         
         <!-- Pestañas de Navegación -->
@@ -447,7 +469,7 @@
             <ul id="timeline" class="steps"></ul>
         </div>
 
-        <!-- Cronómetro (Actualizado para no detenerse con pantalla apagada) -->
+        <!-- Cronómetro -->
         <div class="timer-container">
             <div class="timer-display" id="timer">00:00</div>
             <div class="timer-buttons">
@@ -482,8 +504,6 @@
         // --- SISTEMA DE TEMA (CLARO/OSCURO) ---
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            document.getElementById('theme-btn').innerText = theme === 'dark' ? '☀️' : '🌙';
-            
             const metaTheme = document.getElementById('meta-theme-color');
             if(metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#F5EBE1');
         }
@@ -788,7 +808,7 @@
 
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible' && isRunning) {
-                requestWakeLock(); // Re-solicita el bloqueo de pantalla al volver a la app
+                requestWakeLock();
             }
         });
 
@@ -801,9 +821,8 @@
         function startTimer() { 
             if (!isRunning) { 
                 isRunning = true;
-                startTime = Date.now() - (timerSeconds * 1000); // Fija el tiempo de origen real
+                startTime = Date.now() - (timerSeconds * 1000);
                 timerInterval = setInterval(() => { 
-                    // Calcula los segundos en base a la hora del sistema, no iteraciones del navegador
                     timerSeconds = Math.floor((Date.now() - startTime) / 1000); 
                     updateDisplay(); 
                 }, 250); 
